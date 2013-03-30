@@ -1,0 +1,256 @@
+<html>
+<head>
+	<title>Sochna</title>
+	
+	<link rel="stylesheet" href="css/style.css" />
+	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"></script>
+    <script src="js/login.js"></script>
+	
+	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="http://evbdn.eventbrite.com/s3-s3/static/js/platform/Eventbrite.jquery.js"></script>	
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDY0kkJiTPVd2U7aTOAwhc9ySH6oHxOIYM&sensor=false"></script>		
+		
+	
+	
+	
+	<link href="loginpagestyle.css" rel="stylesheet" type="text/css">
+	<style type="text/css">
+	
+	#loginButton span {
+		background-position:95px 7px;
+	}
+	
+	#loginButton.active span {
+		background-position:95px -76px;
+	}
+
+	}	
+	
+	</style>
+	
+	<script>
+	$(function() {
+		$( ".datepicker" ).datepicker();
+	});
+	
+	var map;		
+			Eventbrite({'app_key': "P47XBRPQTVS7YF64Z5"}, function(eventBrite){				
+				var options = {
+					'postal_code' : "10027",
+					'date': "this month"
+				};						
+				// provide a callback to display the response data:
+				eventBrite.event_search( options, function( response ){
+					var mapProp = {		  					
+						zoom:19,
+						mapTypeId:google.maps.MapTypeId.ROADMAP
+					};			
+					map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
+					var markerBounds = new google.maps.LatLngBounds();
+					
+					var myCenter=new google.maps.LatLng(40.80889,-73.96167);//40°48'32?N 73°57'42?W
+					var marker=new google.maps.Marker({
+								icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+								title:'You are here, doofus',
+								position:myCenter,
+								animation: google.maps.Animation.DROP
+
+					});
+					
+					addInfoWindow(marker,'Your location');
+					marker.setMap(map);
+					
+					
+					var htmlstring="";
+					
+					$.each(response, function(index, element) {				
+						//skip the summary object, it is the fist object in the json.
+						//iterate over the event objects. Note index is 1 below since summary has to be skipped which is index 0.
+						for (var i = 1; i < element.length; i++) {						
+							
+							htmlstring=htmlstring+"<div class=\"eventitem\">";
+							
+							
+							var title = element[i].event.title;
+							var description = element[i].event.description;
+							var category = element[i].event.category;
+							var start_date = element[i].event.start_date;
+							var end_date = element[i].event.end_date;
+							var url = element[i].event.url;
+							var logo = element[i].event.logo;						
+							var venuename = element[i].event.venue.name;
+							//useless people at eventbrite had to use hyphen in the name of Lat-Long. Hence accessing with quotes and braces as below.
+							var latlong = element[i].event.venue['Lat-Long'];
+							//parse the latitude longitude example value in latlong - 47.123 / 3.34
+							
+							var split = latlong.split('/');
+							var location=new google.maps.LatLng($.trim(split[0]),$.trim(split[1]));	
+							var capacity = element[i].event.capacity;
+							
+							var marker=new google.maps.Marker({
+								icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+								title:title,
+								position:location,
+								animation: google.maps.Animation.DROP
+							});
+							addInfoWindow(marker,description);
+							marker.setMap(map);
+							markerBounds.extend(location);
+							
+							
+							htmlstring=htmlstring+"<a href=\""+url+"\">";
+							
+							htmlstring=htmlstring+"<p class=\"itemTitle\">"+title+"</p>";
+							htmlstring=htmlstring+"<p class=\"itemDate\">"+start_date+"</p>";
+							htmlstring=htmlstring+"<p class=\"itemVenue\">"+venuename+"</p>";
+							htmlstring=htmlstring+"<p class=\"itemCategory\">"+category+"</p>";							
+							
+							htmlstring=htmlstring+"</a>";
+							htmlstring=htmlstring+"</div>";
+							
+						}					
+					});								
+					map.fitBounds(markerBounds);	
+
+					
+					
+					//$('.event_list').html(eventBrite.utils.eventList( response, eventBrite.utils.eventListRow ));
+					$('.event_list').html(htmlstring);
+					
+					
+				});
+			});	
+			
+		
+			function addInfoWindow(marker,content) {
+				var infoWindow = new google.maps.InfoWindow({
+					content: content,
+					maxWidth: "200"
+				});
+				
+				google.maps.event.addListener(marker, 'click', function () {
+					
+					infoWindow.open(marker.getMap(), marker);
+					$('span.eb_event_list_title').each(function(){
+						if($(this).text().indexOf(marker.getTitle()) != -1 ){
+							$(this).focus();
+							$(this).toggleClass('eb_event_list_title_highlight');	
+						}
+						$(this).toggleClass('eb_event_list_title');
+						
+					});
+				});
+	
+			}
+
+			function initialize(){}		
+			google.maps.event.addDomListener(window, 'load', initialize);
+			
+	
+	</script>
+
+	
+    
+	<link rel="stylesheet" href="http://code.jquery.com/ui/1.10.2/themes/smoothness/jquery-ui.css" />
+	<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+	<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
+    <!-- <link href="css/bootstrap.min.css" rel="stylesheet" media="screen">
+	<link href="loginpagestyle.css" rel="stylesheet" type="text/css">
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"></script>
+    <script src="js/login.js"></script>
+	
+	 <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>-->
+	
+</head>
+
+<body>
+
+	<div id="bar">
+        <div id="container">
+			<!-- Losgin Starts Here -->
+            <div id="loginContainer">
+                <a href="#" id="loginButton"><span>My Account</span><em></em></a>
+                <div style="clear:both"></div>
+                <div id="loginBox">
+                    <div id="loginFormBox">
+                        <p><a href="#">Edit Account</a></p>
+						<p><a href="#">Signout</a></p>
+						
+                    </div>
+                </div>
+            </div>
+            <!-- Login Ends Here -->
+            <!-- Login Starts Here
+            <div id="loginContainer">
+                <a href="#" id="loginButton2"><span>My Account</span><em></em></a>
+                <div style="clear:both"></div>
+                <div id="loginBox">
+                    <div id="loginFormBox">
+                        <p><a href="#">Edit Account</a></p>
+						<p><a href="#">Signout</a></p>
+						
+                    </div>
+                </div>
+            </div>
+            <!-- Login Ends Here -->
+        </div>
+    </div>
+	
+	<div id="maindiv">
+		<div id="logintopimage">
+			<a href="index.html"><img width="200px" src="logo.png" /></a>
+		</div>
+		<hr />
+		
+		<div id="contentdiv">
+		<p>Welcome John Doe</p>
+		<p>Following are the events around <span id="name">Columbia Diner</span> <span id="address">(988 W, 120th Street, New York)</span></p>
+		</div>
+		
+		<div id="eventsdiv">
+			<div id="eventslist">
+				<div id="filters">
+					<form>
+						<p class="filterHeading">F I L T E R S</p>
+						<p class="eventPs">Attendance strength:</p>
+						<input class="filterinput" type="text" name="min" value="min" /> -	
+						<input class="filterinput" type="text" name="max" value="max" />
+						<p class="eventPs">Date Range:	</p>
+						
+						<input class="datepicker" type="text" name="mind" value="min" /> -	
+						<input class="datepicker" type="text" name="maxd" value="max" />
+
+						<p class="eventPs">Event Category:	</p>
+						<select id="categ">
+						
+							<option>Technology</option>
+							<option>Sports</option>
+							<option>Academia</option>
+							<option>Dance</option>
+							<option>Music</option>
+							
+						</select>
+					</form>
+				</div>
+				
+				<div id="eventList" class="text-box event_list">
+					<a href="http://eventbrite.com">Loading Events</a>
+				</div>
+			</div>
+			
+			<div id="googleMap" class="map">
+			</div>
+		</div>
+		
+		
+		<div id="footer">
+			<div class="footeritems"><p><a href="about.html">About Us</a></p></div>
+			<div class="footeritems"><p><a href="mailto:teamSochna@gmail.com">Contact</a></p></div>
+			
+		</div>
+	</div>
+	
+</body>
+</html>

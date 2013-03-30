@@ -1,0 +1,83 @@
+<html>
+<head>
+	<title>Sochna</title>
+    
+	
+    <!-- <link href="css/bootstrap.min.css" rel="stylesheet" media="screen"> --->
+	<link href="loginpagestyle.css" rel="stylesheet" type="text/css">
+	<link rel="stylesheet" href="css/style.css" />
+
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js?ver=1.4.2"></script>
+    <script src="js/login.js"></script>
+	
+	 <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+	
+</head>
+
+<body>
+
+	<div id="bar">
+        <div id="container">
+            <!-- Login Starts Here -->
+            <div id="loginContainer">
+                <a href="#" id="loginButton"><span>Login</span><em></em></a>
+                <div style="clear:both"></div>
+                <div id="loginBox">
+                    <form id="loginForm">
+                        <fieldset id="body">
+                            <fieldset>
+                                <label for="email">Email Address</label>
+                                <input type="text" name="email" id="email" />
+                            </fieldset>
+                            <fieldset>
+                                <label for="password">Password</label>
+                                <input type="password" name="password" id="password" />
+                            </fieldset>
+                            <input type="submit" id="login" value="Sign in" />
+                            <label for="checkbox"><input type="checkbox" id="checkbox" />Remember me</label>
+                        </fieldset>
+                        <span><a href="#">Forgot your password?</a></span>
+                    </form>
+                </div>
+            </div>
+            <!-- Login Ends Here -->
+        </div>
+    </div>
+	
+	<div id="maindiv">
+		<div id="toplogo">
+			<a href="index.html"><img width="200px" src="logo.png" /></a>
+		</div>
+		<hr id="indexhr" />
+		<div id="corousel">
+			<div id="myCarousel" class="carousel slide">
+			  <ol class="carousel-indicators">
+				<li data-target="#myCarousel" data-slide-to="0" class="active"></li>
+				<li data-target="#myCarousel" data-slide-to="1"></li>
+				<li data-target="#myCarousel" data-slide-to="2"></li>
+			  </ol>
+			  <!-- Carousel items -->
+			  <div class="carousel-inner">
+				<div class="active item"><img src="./img/box_customers1.png" /></div>
+				<div class="item"><img src="./img/box_deals2.png" /></div>
+				<div class="item"><img src="./img/box_events3.png" /></div>
+			  </div>
+			  <!-- Carousel nav -->
+			  <a class="carousel-control left" href="#myCarousel" data-slide="prev">&lsaquo;</a>
+			  <a class="carousel-control right" href="#myCarousel" data-slide="next">&rsaquo;</a>
+			</div>
+		</div>
+		<div>
+				<form action="login.html"><input style="width:200px; height:100px; background-color: black; color:white; font-size: 18" type="submit" value="Demo"></form>
+
+		</div>
+		<div id="footer">
+			<div class="footeritems"><p><a href="about.html">About Us</a></p></div>
+			<div class="footeritems"><p><a href="mailto:teamSochna@gmail.com">Contact</a></p></div>
+			
+		</div>
+	</div>
+	
+</body>
+</html>
