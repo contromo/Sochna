@@ -70,9 +70,16 @@
 							
 							htmlstring=htmlstring+"<div class=\"eventitem\">";
 							
-							
+							var d = '<input type="button" class="someClass" value="Something" onclick="javascript:alert();">';
+
+
+
 							var title = element[i].event.title;
-							var description = element[i].event.description;
+							var description2 = element[i].event.description;
+
+							var description = description2.concat(d);
+
+
 							var category = element[i].event.category;
 							var start_date = element[i].event.start_date;
 							var end_date = element[i].event.end_date;
