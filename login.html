@@ -31,6 +31,32 @@
 	<script>
 	$(function() {
 		$( ".datepicker" ).datepicker();
+		 
+		    $( "#dialog-form" ).dialog({
+		      autoOpen: false,
+		      height: 500,
+		      width: 500,
+		      modal: true,
+		      buttons: {
+		       
+		        Submit: function() {
+		          $( this ).dialog( "close" );
+		        }
+		      },
+		      close: function() {
+		        allFields.val( "" ).removeClass( "ui-state-error" );
+		      }
+		    });
+		 
+		  
+
+
+
+
+
+
+
+
 	});
 	
 	var map;		
@@ -70,9 +96,9 @@
 							
 							htmlstring=htmlstring+"<div class=\"eventitem\">";
 							
-							var d = '<input type="button" class="someClass" value="Something" onclick="javascript:alert();">';
+							var d = '<input type="button" id="someButton" value="Contact" onclick="javascript:lightBox();">';
 
-
+							//var d = '<input type="button" class="someClass" value="Something" onclick="javascript:alert();">';	
 
 							var title = element[i].event.title;
 							var description2 = element[i].event.description;
@@ -152,6 +178,16 @@
 
 			function initialize(){}		
 			google.maps.event.addDomListener(window, 'load', initialize);
+
+
+			function lightBox(){
+		
+				  $( "#someButton" )
+				      .button()
+		      		.click(function() {
+		        		$( "#dialog-form" ).dialog( "open" );
+		     		 });
+			}
 			
 	
 	</script>
@@ -251,6 +287,28 @@
 			</div>
 		</div>
 		
+		<div id="dialog-form" title="Contact the organizer">
+		  <p class="validateTips">Please enter your information below</p>
+		 
+		  <form>
+		  <fieldset>
+		    <label for="name">Name</label>
+		    <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
+		    <br />
+		    <label for="email">Email</label>
+		    <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" />
+		    <br />
+		    <label for="phone">Phone</label>
+		    <input type="text" name="phone" id="phone" value="" class="text ui-widget-content ui-corner-all" />
+		    <br />
+			<label for="message">Message</label>
+			<textarea name="message" cols="25" rows="10">
+			</textarea>
+		  </fieldset>
+		  </form>
+		</div>
+
+
 		
 		<div id="footer">
 			<div class="footeritems"><p><a href="about.html">About Us</a></p></div>
