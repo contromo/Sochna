@@ -12,6 +12,32 @@
 	
 	 <script src="http://code.jquery.com/jquery.js"></script>
     <script src="js/bootstrap.min.js"></script>
+    
+    <script type="text/javascript">
+		
+		function check()
+		{
+			if(document.getElementById('email').value=='johndoe@gmail.com' && document.getElementById('password').value=='password')
+			{
+				window.location = "login.html?usx=1";
+			}
+			
+			else if(document.getElementById('email').value=='clarkkent@gmail.com' && document.getElementById('password').value=='password')
+			{
+				window.location = "login.html?usx=2";
+			}
+			
+			document.getElementById('invalid').innerHTML='ID & Password invalid';
+			
+		}
+		
+		function giveFalse()
+		{
+			return false;
+		}
+		
+		
+    </script>
 	
 </head>
 
@@ -24,7 +50,7 @@
                 <a href="#" id="loginButton"><span>Login</span><em></em></a>
                 <div style="clear:both"></div>
                 <div id="loginBox">
-                    <form id="loginForm">
+                    <form id="loginForm" onsubmit="return giveFalse()" action="login.html">
                         <fieldset id="body">
                             <fieldset>
                                 <label for="email">Email Address</label>
@@ -34,9 +60,10 @@
                                 <label for="password">Password</label>
                                 <input type="password" name="password" id="password" />
                             </fieldset>
-                            <input type="submit" id="login" value="Sign in" />
+                            <input type="submit" id="login" value="Sign in" onclick="check()" />
                             <label for="checkbox"><input type="checkbox" id="checkbox" />Remember me</label>
                         </fieldset>
+                        <span id="invalid" style="color:red">&nbsp;</span>
                         <span><a href="#">Forgot your password?</a></span>
                     </form>
                 </div>
@@ -69,7 +96,7 @@
 			</div>
 		</div>
 		<div>
-				<form action="login.html"><input style="width:200px; height:100px; background-color: black; color:white; font-size: 18" type="submit" value="Demo"></form>
+				<!--<form action="login.html" onsubmit="return check()"><input style="width:200px; height:100px; background-color: black; color:white; font-size: 18" type="submit" value="Demo"></form>-->
 
 		</div>
 		<div id="footer">
