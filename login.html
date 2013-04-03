@@ -8,188 +8,374 @@
 	
 	<script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="http://evbdn.eventbrite.com/s3-s3/static/js/platform/Eventbrite.jquery.js"></script>	
-	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDY0kkJiTPVd2U7aTOAwhc9ySH6oHxOIYM&sensor=false"></script>		
-		
-	
-	
+	<script src="http://maps.googleapis.com/maps/api/js?key=AIzaSyDY0kkJiTPVd2U7aTOAwhc9ySH6oHxOIYM&sensor=false"></script>	
 	
 	<link href="loginpagestyle.css" rel="stylesheet" type="text/css">
 	<style type="text/css">
 	
-	#loginButton span {
+	#loginButton span
+	{
 		background-position:95px 7px;
 	}
 	
-	#loginButton.active span {
+	#loginButton.active span
+	{
 		background-position:95px -76px;
 	}
-
-	}	
 	
 	</style>
 	
 	<script>
-	$(function() {
-		$( ".datepicker" ).datepicker();
-		 
-		    $( "#dialog-form" ).dialog({
-		      autoOpen: false,
-		      height: 500,
-		      width: 500,
-		      modal: true,
-		      buttons: {
-		       
-		        Submit: function() {
-		          $( this ).dialog( "close" );
-		        }
-		      },
-		      close: function() {
-		        allFields.val( "" ).removeClass( "ui-state-error" );
-		      }
-		    });
-		 
-		  
-
-
-
-
-
-
-
-
-	});
 	
-	var map;		
-			Eventbrite({'app_key': "P47XBRPQTVS7YF64Z5"}, function(eventBrite){				
-				var options = {
-					'postal_code' : "10027",
-					'date': "this month"
-				};						
-				// provide a callback to display the response data:
-				eventBrite.event_search( options, function( response ){
-					var mapProp = {		  					
-						zoom:19,
-						mapTypeId:google.maps.MapTypeId.ROADMAP
-					};			
-					map=new google.maps.Map(document.getElementById("googleMap"),mapProp);
-					var markerBounds = new google.maps.LatLngBounds();
-					
-					var myCenter=new google.maps.LatLng(40.80889,-73.96167);//40°48'32?N 73°57'42?W
-					var marker=new google.maps.Marker({
-								icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
-								title:'You are here, doofus',
-								position:myCenter,
-								animation: google.maps.Animation.DROP
+	function getLength(my_object)
+	{
+		var len = 0;
+		for (var o in my_object)
+		{
+			len++;
+		}
+		return len;
+	}
+	
+	function toTitleCase(str) {
+    return str.replace(/(?:^|\s)\w/g, function(match) {
+        return match.toUpperCase();
+    });
+}
 
-					});
-					
-					addInfoWindow(marker,'Your location');
-					marker.setMap(map);
-					
-					
-					var htmlstring="";
-					
-					$.each(response, function(index, element) {				
-						//skip the summary object, it is the fist object in the json.
-						//iterate over the event objects. Note index is 1 below since summary has to be skipped which is index 0.
-						for (var i = 1; i < element.length; i++) {						
-							
-							htmlstring=htmlstring+"<div class=\"eventitem\">";
-							
-							var d = '<input type="button" id="someButton" value="Contact" onclick="javascript:lightBox();">';
+	$(function () {
+    $(".datepicker").datepicker();
 
-							//var d = '<input type="button" class="someClass" value="Something" onclick="javascript:alert();">';	
+    $("#dialog-form").dialog({
+        autoOpen: false,
+        height: 500,
+        width: 500,
+        modal: true,
+        buttons: {
 
-							var title = element[i].event.title;
-							var description2 = element[i].event.description;
-
-							var description = description2.concat(d);
+            Submit: function () {
+                $(this).dialog("close");
+            }
+        },
+        close: function () {
+            allFields.val("").removeClass("ui-state-error");
+        }
+    });
 
 
-							var category = element[i].event.category;
-							var start_date = element[i].event.start_date;
-							var end_date = element[i].event.end_date;
-							var url = element[i].event.url;
-							var logo = element[i].event.logo;						
-							var venuename = element[i].event.venue.name;
-							//useless people at eventbrite had to use hyphen in the name of Lat-Long. Hence accessing with quotes and braces as below.
-							var latlong = element[i].event.venue['Lat-Long'];
-							//parse the latitude longitude example value in latlong - 47.123 / 3.34
-							
-							var split = latlong.split('/');
-							var location=new google.maps.LatLng($.trim(split[0]),$.trim(split[1]));	
-							var capacity = element[i].event.capacity;
-							
-							var marker=new google.maps.Marker({
-								icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
-								title:title,
-								position:location,
-								animation: google.maps.Animation.DROP
-							});
-							addInfoWindow(marker,description);
-							marker.setMap(map);
-							markerBounds.extend(location);
-							
-							
-							htmlstring=htmlstring+"<a href=\""+url+"\">";
-							
-							htmlstring=htmlstring+"<p class=\"itemTitle\">"+title+"</p>";
-							htmlstring=htmlstring+"<p class=\"itemDate\">"+start_date+"</p>";
-							htmlstring=htmlstring+"<p class=\"itemVenue\">"+venuename+"</p>";
-							htmlstring=htmlstring+"<p class=\"itemCategory\">"+category+"</p>";							
-							
-							htmlstring=htmlstring+"</a>";
-							htmlstring=htmlstring+"</div>";
-							
-						}					
-					});								
-					map.fitBounds(markerBounds);	
 
-					
-					
-					//$('.event_list').html(eventBrite.utils.eventList( response, eventBrite.utils.eventListRow ));
-					$('.event_list').html(htmlstring);
-					
-					
-				});
-			});	
-			
+
+
+
+
+
+
+
+});
+
+var map;
+var allCategories=new Object;
+Eventbrite({
+    'app_key': "P47XBRPQTVS7YF64Z5"
+}, function (eventBrite) {
+	var user= window.location.search.substr(1).split('&',2)[0].split('=')[1];
+	var options;
+	
+	if(user==1)
+	{
+    options = {
+        'postal_code': "10027",
+        'date': "this month",
+    };
+}
+else
+{
+	options = {
+        'postal_code': "10036",
+        'date': "this month"
+    };
+    
+}
+    // provide a callback to display the response data:
+    eventBrite.event_search(options, function (response) {
+        var mapProp = {
+            zoom: 19,
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("googleMap"), mapProp);
+        var markerBounds = new google.maps.LatLngBounds();
+
+        var myCenter;
+        
+        if(user==1)
+        {
+			myCenter = new google.maps.LatLng(40.80889, -73.96167); //40°48'32?N 73°57'42?W
+		}
+		else
+		{
+			myCenter = new google.maps.LatLng(40.756555,-73.987856);//40.756555,-73.987856
+		}
+        var marker = new google.maps.Marker({
+            icon: 'http://maps.google.com/mapfiles/ms/icons/red-dot.png',
+            title: 'You are here',
+            position: myCenter,
+            animation: google.maps.Animation.DROP
+
+        });
+
+        addInfoWindow(marker, 'Your location');
+        marker.setMap(map);
+
+
+        
+///////////////////////////////////////////
+		var prmstr = window.location.search.substr(1);
+		var filter=false;
 		
-			function addInfoWindow(marker,content) {
-				var infoWindow = new google.maps.InfoWindow({
-					content: content,
-					maxWidth: "200"
-				});
+		
+		var prmarr = prmstr.split ("&");
+		if(prmarr.length>1)
+		{
+			var params = {};
+
+			for ( var i = 1; i < prmarr.length; i++) {
+				var tmparr = prmarr[i].split("=");
+				params[tmparr[0]] = tmparr[1];
+			}
+			filter=true;
+		}
+		
+		
+		
+		//alert(params['maxd'].split('%2F').join('/'));
+///////////////////////////////////////////	
+		
+		var htmlstring = "";
+		
+        $.each(response, function (index, element) {
+            //skip the summary object, it is the fist object in the json.
+            //iterate over the event objects. Note index is 1 below since summary has to be skipped which is index 0.
+            for (var i = 1; i < element.length; i++) {
 				
-				google.maps.event.addListener(marker, 'click', function () {
+				
+                var title = element[i].event.title;
+                var description2 = element[i].event.description;
+
+                var description = description2.concat(d);
+
+                var category = element[i].event.category;
+                var start_date = element[i].event.start_date;
+                var end_date = element[i].event.end_date;
+                var url = element[i].event.url;
+                var logo = element[i].event.logo;
+                var venuename = element[i].event.venue.name;
+                //useless people at eventbrite had to use hyphen in the name of Lat-Long. Hence accessing with quotes and braces as below.
+                var latlong = element[i].event.venue['Lat-Long'];
+                //parse the latitude longitude example value in latlong - 47.123 / 3.34
+
+                var split = latlong.split('/');
+                var location = new google.maps.LatLng($.trim(split[0]), $.trim(split[1]));
+                var capacity = element[i].event.capacity;
+				
+				//Filter check
+				if(filter==true)
+				{
 					
-					infoWindow.open(marker.getMap(), marker);
-					$('span.eb_event_list_title').each(function(){
-						if($(this).text().indexOf(marker.getTitle()) != -1 ){
-							$(this).focus();
-							$(this).toggleClass('eb_event_list_title_highlight');	
-						}
-						$(this).toggleClass('eb_event_list_title');
+					var max_d=new Date(params['maxd'].split('%2F').join('/'));
+					var min_d=new Date(params['mind'].split('%2F').join('/'));
+					var this_d=new Date(start_date.substring(0,10));
+					
+					if(category=='')
+					{
+						title=title+'*';
+					}
+					
+					else if(this_d>max_d || this_d<min_d)
+					{
+						//alert(this_d);
+						continue;
+					}
+					
+					
+					else if(params['catg'].toLowerCase()!='all' && category.toLowerCase().indexOf(params['catg'].toLowerCase())==-1)
+					{
+						continue;
+					}
+					else
+					{
 						
-					});
-				});
-	
-			}
+						var in1=window.location.search.indexOf('keyw=');
+						var in2=window.location.search.indexOf('&',ind1);
+						var kewo=window.location.search.substring(ind1+5,ind2);
+						
+						
+						if(kewo!='' && kewo!='(keywords)')
+						{
+							var keyws=kewo.split(' ');
+							var found=false;
+							for(wrd in keyws)
+							{
+								//alert(keyws[wrd]);
+								if(description.toLowerCase().indexOf(keyws[wrd])!=-1 || title.toLowerCase().indexOf(keyws[wrd])!=-1)
+								{
+									//alert('++'+title);
+									found=true;
+									break;
+								}
+							}
+							
+							if(found==false)
+							{
+								//alert(title);
+								continue;
+							}
+						}
+						
+					}
+					
+				}
 
-			function initialize(){}		
-			google.maps.event.addDomListener(window, 'load', initialize);
+                htmlstring = htmlstring + "<div class=\"eventitem\">";
+
+                var d = '<input type="button" id="someButton" value="Contact" onclick="javascript:lightBox();">';
+
+                //var d = '<input type="button" class="someClass" value="Something" onclick="javascript:alert();">';	
 
 
-			function lightBox(){
-		
-				  $( "#someButton" )
-				      .button()
-		      		.click(function() {
-		        		$( "#dialog-form" ).dialog( "open" );
-		     		 });
-			}
+                var marker = new google.maps.Marker({
+                    icon: 'http://maps.google.com/mapfiles/ms/icons/blue-dot.png',
+                    title: title,
+                    position: location,
+                    animation: google.maps.Animation.DROP
+                });
+                addInfoWindow(marker, description);
+                marker.setMap(map);
+                markerBounds.extend(location);
+
+
+                htmlstring = htmlstring + "<a href=\"" + url + "\">";
+
+                htmlstring = htmlstring + "<p class=\"itemTitle\">" + title + "</p>";
+                htmlstring = htmlstring + "<p class=\"itemDate\">" + start_date + "</p>";
+                htmlstring = htmlstring + "<p class=\"itemVenue\">" + venuename + "</p>";
+                htmlstring = htmlstring + "<p class=\"itemCategory\">" + category + "</p>";
+				
+				
+				var categs=category.split(',');
+				
+				for(var ind= 0; ind < categs.length; ind++)
+				{
+					//alert(categs[ind]);
+					
+					categs[ind]=categs[ind].toLowerCase();
+					
+					if(categs[ind] in allCategories)
+					{
+					}
+					else
+					{
+						allCategories[categs[ind]]=true;
+					}
+				}
+				
+				
+						
+                htmlstring = htmlstring + "</a>";
+                htmlstring = htmlstring + "</div>";
+
+            }
+        });
+        map.fitBounds(markerBounds);
+        
+       //Start filling the categories
+       var htmlString='<option value="all">All</option>';
+	   
+	   //for(var ind= 0; ind < getLength(allCategories); ind++)
+	   for(catg in allCategories)
+		{
 			
+			if(catg=='')
+			{
+				delete allCategories[catg];
+				continue;
+			}
+			htmlString = htmlString+'<option value="'+catg+'">'+toTitleCase(catg)+'</option>';
+			
+		}
+		document.getElementById('categ').innerHTML=htmlString;
+        ///////////////////////////
+
+
+
+        //$('.event_list').html(eventBrite.utils.eventList( response, eventBrite.utils.eventListRow ));
+        $('.event_list').html(htmlstring);
+
+
+    });
+});
+
+
+function addInfoWindow(marker, content) {
+    var infoWindow = new google.maps.InfoWindow({
+        content: content,
+        maxWidth: "200"
+    });
+
+    google.maps.event.addListener(marker, 'click', function () {
+
+        infoWindow.open(marker.getMap(), marker);
+        $('span.eb_event_list_title').each(function () {
+            if ($(this).text().indexOf(marker.getTitle()) != -1) {
+                $(this).focus();
+                $(this).toggleClass('eb_event_list_title_highlight');
+            }
+            $(this).toggleClass('eb_event_list_title');
+
+        });
+    });
+
+}
+
+function initialize() {}
+google.maps.event.addDomListener(window, 'load', initialize);
+
+
+function lightBox() {
+
+    $("#someButton")
+        .button()
+        .click(function () {
+        $("#dialog-form").dialog("open");
+    });
+}
+
+function submitClick()
+{
+	//window.location="http://google.com";
 	
+	var usntag = window.location.search.substr(1).split('&',2)[0].split('=')[0];
+	var usernumber = window.location.search.substr(1).split('&',2)[0].split('=')[1];
+	/*var minc=document.getElementById('minc').value;
+	var maxc=document.getElementById('maxc').value;*/
+	var keyw=document.getElementById('keyw').value;
+	var mind=document.getElementById('mind').value;
+	var maxd=document.getElementById('maxd').value;
+	
+	var e = document.getElementById("categ");
+	var catg = e.options[e.selectedIndex].text;
+	
+	
+	//var newparamstring= '?'+usntag+'='+usernumber+'&minc='+minc+'&maxc='+maxc+'&mind='+mind+'&maxd='+maxd+'&catg='+catg;
+	var newparamstring= '?'+usntag+'='+usernumber+'&keyw='+keyw+'&mind='+mind+'&maxd='+maxd+'&catg='+catg;
+	
+	window.location = "login.html" + newparamstring;
+	
+}
+
+function giveFalse()
+{
+	return false;
+}
 	</script>
 
 	
@@ -219,7 +405,7 @@
                 <div id="loginBox">
                     <div id="loginFormBox">
                         <p><a href="#">Edit Account</a></p>
-						<p><a href="#">Signout</a></p>
+						<p><a href="index.html">Signout</a></p>
 						
                     </div>
                 </div>
@@ -248,33 +434,79 @@
 		<hr />
 		
 		<div id="contentdiv">
-		<p>Welcome John Doe</p>
-		<p>Following are the events around <span id="name">Columbia Diner</span> <span id="address">(988 W, 120th Street, New York)</span></p>
+		<p>Welcome <script type="text/javascript">var indeq=window.location.search.indexOf('=');
+		 if(window.location.search.charAt(indeq+1)=='1') { document.write('John Doe'); } else { document.write('Clark Kent'); }</script>
+		</p>
+		
+		
+		
+		<p>Following are the events around <span id="name">
+			<script>
+			if(window.location.search.charAt(indeq+1)=='1')
+			{
+				document.write('Columbia Diner');
+			}
+			else
+			{
+				document.write('Cafe Downtown');
+			}
+			</script>
+			</span> <span id="address">
+				
+				<script>
+			if(window.location.search.charAt(indeq+1)=='1')
+			{
+				document.write('(988 W, 120th Street, New York)');
+			}
+			else
+			{
+				document.write('(325 W, 42nd Street, New York)');
+			}
+			</script>
+				
+				
+				</span></p>
 		</div>
 		
 		<div id="eventsdiv">
 			<div id="eventslist">
 				<div id="filters">
-					<form>
+					<form onsubmit="return giveFalse()">
 						<p class="filterHeading">F I L T E R S</p>
-						<p class="eventPs">Attendance strength:</p>
-						<input class="filterinput" type="text" name="min" value="min" /> -	
-						<input class="filterinput" type="text" name="max" value="max" />
+						<p class="eventPs">Keywords:</p>
+						<!--<input class="filterinput" id="minc" type="text" name="min" value="0" /> -	
+						<input class="filterinput" id="maxc" type="text" name="max" value="1000" />-->
+						<input class="filterinput" style="width:16em" onclick="this.value=''" id="keyw" type="text" name="keyw" value="(keywords)" />
+						<script>
+						var indq=window.location.search.indexOf('?');
+						var ind1=window.location.search.indexOf('keyw=');
+						var ind2=window.location.search.indexOf('&',ind1);
+						
+						
+						if(ind1!=-1)
+						{
+						var keywo=window.location.search.substring(ind1+5,ind2);
+						
+						document.getElementById('keyw').value=keywo;
+						}
+						
+						</script>
+						
 						<p class="eventPs">Date Range:	</p>
 						
-						<input class="datepicker" type="text" name="mind" value="min" /> -	
-						<input class="datepicker" type="text" name="maxd" value="max" />
+						<input class="datepicker" id="mind" type="text" name="mind" value="01/01/2013" /> -	
+						<input class="datepicker" id="maxd" type="text" name="maxd" value="12/31/2013" />
 
 						<p class="eventPs">Event Category:	</p>
-						<select id="categ">
 						
-							<option>Technology</option>
-							<option>Sports</option>
-							<option>Academia</option>
-							<option>Dance</option>
-							<option>Music</option>
+						<select id="categ">
 							
 						</select>
+						<script type="text/javascript">
+							   
+						</script>
+						
+						<input class="subbutton" type="submit" value="APPLY" onclick="submitClick()" />
 					</form>
 				</div>
 				
@@ -285,6 +517,7 @@
 			
 			<div id="googleMap" class="map">
 			</div>
+			
 		</div>
 		
 		<div id="dialog-form" title="Contact the organizer">
@@ -292,21 +525,18 @@
 		 
 		  <form>
 		  <fieldset>
-		    <label for="name">Name</label> 
-		  	<br />
+		    <label for="name">Name</label>
 		    <input type="text" name="name" id="name" class="text ui-widget-content ui-corner-all" />
 		    <br />
 		    <label for="email">Email</label>
-		    <br />
 		    <input type="text" name="email" id="email" value="" class="text ui-widget-content ui-corner-all" />
 		    <br />
 		    <label for="phone">Phone</label>
-		    <br />
 		    <input type="text" name="phone" id="phone" value="" class="text ui-widget-content ui-corner-all" />
 		    <br />
 			<label for="message">Message</label>
-			<br />
-			<textarea name="message" cols="25" rows="10"></textarea>
+			<textarea name="message" cols="25" rows="10">
+			</textarea>
 		  </fieldset>
 		  </form>
 		</div>
